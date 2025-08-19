@@ -175,6 +175,13 @@ body {
 /* 模式选择器 */
 .mode-selector {
   display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.mode-options {
+  display: flex;
   gap: 1rem;
 }
 
@@ -208,6 +215,324 @@ body {
 .mode-label:hover {
   background: var(--bg-tertiary);
   color: var(--text-primary);
+}
+
+/* 场景按钮 */
+.scene-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.scene-btn:hover {
+  border-color: var(--primary);
+  background: var(--primary-bg);
+  color: var(--primary-dark);
+}
+
+.scene-btn i {
+  font-size: 0.9rem;
+}
+
+/* 场景设置悬浮窗 */
+.scene-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+  display: none;
+}
+
+.scene-modal.show {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.scene-modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+}
+
+.scene-modal-content {
+  position: relative;
+  background: var(--bg-primary);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  width: 90%;
+  max-width: 500px;
+  max-height: 80vh;
+  overflow: hidden;
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.scene-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-secondary);
+}
+
+.scene-modal-header h4 {
+  margin: 0;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.scene-modal-close {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: var(--radius);
+  transition: all 0.2s;
+  font-size: 1.2rem;
+}
+
+.scene-modal-close:hover {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.scene-modal-body {
+  padding: 1.5rem;
+}
+
+.setting-section {
+  margin-bottom: 2rem;
+}
+
+.setting-section:last-child {
+  margin-bottom: 0;
+}
+
+.setting-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 1rem 0;
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-weight: 600;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.setting-title i {
+  color: var(--primary);
+}
+
+.scene-presets {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.scene-option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-primary);
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+.scene-option:hover {
+  border-color: var(--primary);
+  background: var(--primary-bg);
+}
+
+.scene-option input[type="radio"] {
+  display: none;
+}
+
+.scene-option input[type="radio"]:checked + .scene-label {
+  color: var(--primary-dark);
+  font-weight: 600;
+}
+
+.scene-option:has(input[type="radio"]:checked) {
+  border-color: var(--primary);
+  background: var(--primary-bg);
+}
+
+.scene-label {
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
+}
+
+.custom-scene {
+  margin-top: 1rem;
+}
+
+.custom-scene-input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+}
+
+.custom-scene-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(77, 128, 120, 0.1);
+}
+
+.custom-scene-input::placeholder {
+  color: var(--text-tertiary);
+}
+
+/* 口吻设置样式 */
+.tone-presets {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.tone-option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-primary);
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+.tone-option:hover {
+  border-color: var(--primary);
+  background: var(--primary-bg);
+}
+
+.tone-option input[type="radio"] {
+  display: none;
+}
+
+.tone-option input[type="radio"]:checked + .tone-label {
+  color: var(--primary-dark);
+  font-weight: 600;
+}
+
+.tone-option:has(input[type="radio"]:checked) {
+  border-color: var(--primary);
+  background: var(--primary-bg);
+}
+
+.tone-label {
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
+}
+
+.custom-tone {
+  margin-top: 1rem;
+}
+
+.custom-tone-input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+}
+
+.custom-tone-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(77, 128, 120, 0.1);
+}
+
+.custom-tone-input::placeholder {
+  color: var(--text-tertiary);
+}
+
+
+
+.scene-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  border-top: 1px solid var(--border);
+  background: var(--bg-secondary);
+}
+
+.scene-modal-cancel,
+.scene-modal-confirm {
+  padding: 0.75rem 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.scene-modal-cancel {
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+}
+
+.scene-modal-cancel:hover {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.scene-modal-confirm {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.scene-modal-confirm:hover {
+  background: var(--primary-dark);
 }
 
 /* 加载状态 */
@@ -1039,6 +1364,61 @@ body {
 
 .retry-btn:hover {
   background: var(--primary-dark);
+}
+
+/* 无效输入错误样式 */
+.error-message.invalid-input {
+  border: 1px solid #fff3e0;
+  background: linear-gradient(135deg, #fff9f0 0%, #fff3e0 100%);
+  border-radius: var(--radius-lg);
+}
+
+.error-message.invalid-input .error-icon {
+  color: #ff9800;
+}
+
+.error-message.invalid-input h3 {
+  color: #f57c00;
+}
+
+.error-details {
+  text-align: left;
+  max-width: 500px;
+  margin: 0 auto 2rem;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: var(--radius);
+  border: 1px solid #ffcc80;
+}
+
+.error-details h4 {
+  color: var(--text-primary);
+  margin: 0 0 0.5rem 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.error-details .examples {
+  background: #e8f5e8;
+  padding: 0.75rem;
+  border-radius: var(--radius-sm);
+  font-family: 'Courier New', monospace;
+  font-size: 0.85rem;
+  color: #2e7d32;
+  margin: 0.5rem 0 1rem 0;
+  border-left: 3px solid #4caf50;
+}
+
+.avoid-list {
+  margin: 0.5rem 0 0 0;
+  padding-left: 1.2rem;
+}
+
+.avoid-list li {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  margin-bottom: 0.3rem;
+  line-height: 1.4;
 }
 
 /* 工具类 */

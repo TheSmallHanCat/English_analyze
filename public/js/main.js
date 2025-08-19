@@ -4,6 +4,7 @@ class EnglishAnalyzer {
   constructor() {
     this.initializeElements();
     this.bindEvents();
+    this.initSceneSettings();
   }
 
   initializeElements() {
@@ -25,6 +26,125 @@ class EnglishAnalyzer {
     });
   }
 
+  initSceneSettings() {
+    // 场景模式切换事件
+    const sceneModeInputs = document.querySelectorAll('input[name="sceneMode"]');
+    sceneModeInputs.forEach(input => {
+      input.addEventListener('change', () => this.handleSceneModeChange());
+    });
+
+    // 口吻模式切换事件
+    const toneModeInputs = document.querySelectorAll('input[name="toneMode"]');
+    toneModeInputs.forEach(input => {
+      input.addEventListener('change', () => this.handleToneModeChange());
+    });
+
+    // 初始化当前场景显示
+    this.updateCurrentSceneDisplay();
+  }
+
+  openSceneModal() {
+    const modal = document.getElementById('sceneModal');
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+  }
+
+  closeSceneModal() {
+    const modal = document.getElementById('sceneModal');
+    modal.classList.remove('show');
+    document.body.style.overflow = '';
+  }
+
+  confirmSceneSettings() {
+    this.updateCurrentSceneDisplay();
+    this.closeSceneModal();
+  }
+
+  handleSceneModeChange() {
+    const selectedMode = document.querySelector('input[name="sceneMode"]:checked').value;
+    const customSceneInput = document.getElementById('customSceneInput');
+
+    if (selectedMode === 'custom') {
+      customSceneInput.classList.remove('d-none');
+    } else {
+      customSceneInput.classList.add('d-none');
+    }
+  }
+
+  handleToneModeChange() {
+    const selectedMode = document.querySelector('input[name="toneMode"]:checked').value;
+    const customToneInput = document.getElementById('customToneInput');
+
+    if (selectedMode === 'custom') {
+      customToneInput.classList.remove('d-none');
+    } else {
+      customToneInput.classList.add('d-none');
+    }
+  }
+
+  updateCurrentSceneDisplay() {
+    const selectedMode = document.querySelector('input[name="sceneMode"]:checked').value;
+    const currentSceneText = document.getElementById('currentSceneText');
+
+    if (selectedMode === 'custom') {
+      const customScene = document.getElementById('customScene').value.trim();
+      currentSceneText.textContent = customScene || '自定义';
+    } else {
+      const sceneMap = {
+        'general': '通用',
+        'business': '商务',
+        'academic': '学术',
+        'technical': '技术',
+        'daily': '日常'
+      };
+      currentSceneText.textContent = sceneMap[selectedMode] || '通用';
+    }
+  }
+
+  getSceneContext() {
+    const selectedMode = document.querySelector('input[name="sceneMode"]:checked').value;
+
+    if (selectedMode === 'general') {
+      return null; // 通用模式不添加场景上下文
+    }
+
+    if (selectedMode === 'custom') {
+      const customScene = document.getElementById('customScene').value.trim();
+      return customScene || null;
+    }
+
+    // 预设场景映射
+    const sceneMap = {
+      'business': '商务英语',
+      'academic': '学术英语',
+      'technical': '技术文档',
+      'daily': '日常对话'
+    };
+
+    return sceneMap[selectedMode] || null;
+  }
+
+  getToneContext() {
+    const selectedMode = document.querySelector('input[name="toneMode"]:checked').value;
+
+    if (selectedMode === 'normal') {
+      return null; // 通用口吻不添加特殊要求
+    }
+
+    if (selectedMode === 'custom') {
+      const customTone = document.getElementById('customTone').value.trim();
+      return customTone || null;
+    }
+
+    // 预设口吻映射
+    const toneMap = {
+      'humorous': '幽默风趣',
+      'catgirl': '你是一只猫娘，请用可爱的口吻回答'
+    };
+
+    return toneMap[selectedMode] || null;
+  }
+
   async analyzeText() {
     const text = this.textInput.value.trim();
     if (!text) {
@@ -33,19 +153,28 @@ class EnglishAnalyzer {
     }
 
     const mode = document.querySelector('input[name="analysisMode"]:checked').value;
-    
+    const sceneContext = this.getSceneContext();
+    const toneContext = this.getToneContext();
+
     try {
       this.showLoading();
-      
+
       const response = await axios.post('/api/analyze', {
         text: text,
-        mode: mode
+        mode: mode,
+        scene: sceneContext,
+        tone: toneContext
       });
 
       if (response.data.success) {
         this.showResult(response.data.content, mode);
       } else {
-        this.showError(response.data.error || '分析失败');
+        // 处理特定的错误类型
+        if (response.data.error === 'INVALID_INPUT') {
+          this.showInvalidInputError(mode);
+        } else {
+          this.showError(response.data.error || '分析失败');
+        }
       }
     } catch (error) {
       console.error('分析错误:', error);
@@ -95,21 +224,9 @@ class EnglishAnalyzer {
 
     const analysisContent = this.resultContainer.querySelector('.analysis-content');
 
-    if (mode === 'word') {
-      // 单词模式：直接渲染HTML
-      const cleanHtml = DOMPurify.sanitize(content);
-      analysisContent.innerHTML = cleanHtml;
-    } else {
-      // 句子模式：解析JSON并渲染
-      try {
-        const result = JSON.parse(content);
-        this.renderSentenceResult(result, analysisContent);
-      } catch (error) {
-        console.error('JSON解析错误:', error);
-        this.showError('结果解析失败，请重试');
-        return;
-      }
-    }
+    // 单词模式和句子模式都直接渲染HTML
+    const cleanHtml = DOMPurify.sanitize(content);
+    analysisContent.innerHTML = cleanHtml;
 
     this.resultContainer.classList.remove('d-none');
 
@@ -120,58 +237,7 @@ class EnglishAnalyzer {
     });
   }
 
-  // 渲染句子分析结果 - 完全参考exampleproject
-  renderSentenceResult(result, container) {
-    const html = `
-      <div class="sentence-analysis animate__animated animate__fadeIn">
-        <div class="original-sentence">
-          ${result.sentence}
-        </div>
-        <div class="translation">
-          ${result.translation}
-        </div>
-        <div class="structure">
-          <h5 class="section-title">句子结构</h5>
-          <div class="structure-type"><strong>类型：</strong> ${result.structure.type}</div>
-          <div class="structure-explanation">${result.structure.explanation}</div>
-        </div>
 
-        <div class="components">
-          <h5 class="section-title">句子成分</h5>
-          ${result.components.map(comp => `
-            <div class="component">
-              <div class="role">${comp.role}</div>
-              <div class="text"><strong>${comp.text}</strong></div>
-              <div class="explanation">${comp.explanation}</div>
-            </div>
-          `).join('')}
-        </div>
-
-        <div class="key-phrases">
-          <h5 class="section-title">关键词汇与短语</h5>
-          ${result.keyPhrases.map(phrase => `
-            <div class="key-phrase">
-              <div class="phrase">${phrase.phrase}</div>
-              <div class="meaning"><strong>含义：</strong> ${phrase.meaning}</div>
-              <div class="usage"><strong>用法：</strong> ${phrase.usage}</div>
-            </div>
-          `).join('')}
-        </div>
-
-        <div class="grammar-points">
-          <h5 class="section-title">语法分析</h5>
-          ${result.grammar.map(point => `
-            <div class="grammar-point">
-              <div class="aspect">${point.aspect}</div>
-              <div class="explanation">${point.explanation}</div>
-            </div>
-          `).join('')}
-        </div>
-      </div>
-    `;
-
-    container.innerHTML = html;
-  }
 
 
 
@@ -183,6 +249,36 @@ class EnglishAnalyzer {
         <p>${message}</p>
         <button class="retry-btn" onclick="analyzer.clearResult()">
           重试
+        </button>
+      </div>
+    `;
+    this.resultContainer.classList.remove('d-none');
+  }
+
+  showInvalidInputError(mode) {
+    const modeText = mode === 'word' ? '单词' : '句子';
+    const examples = mode === 'word'
+      ? '例如：hello, beautiful, understand'
+      : '例如：Hello world, I love English, How are you?';
+
+    this.resultContainer.innerHTML = `
+      <div class="error-message invalid-input">
+        <div class="error-icon">🤔</div>
+        <h3>输入内容有误</h3>
+        <p>请检查您输入的内容，确保是有效的英语${modeText}。</p>
+        <div class="error-details">
+          <h4>有效输入示例：</h4>
+          <p class="examples">${examples}</p>
+          <h4>请避免：</h4>
+          <ul class="avoid-list">
+            <li>空白内容或纯符号</li>
+            <li>纯数字或无意义字符</li>
+            <li>中文内容</li>
+            ${mode === 'word' ? '<li>过长的文本（请使用句子模式）</li>' : '<li>过短或过长的内容</li>'}
+          </ul>
+        </div>
+        <button class="retry-btn" onclick="analyzer.clearResult()">
+          重新输入
         </button>
       </div>
     `;

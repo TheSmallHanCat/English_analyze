@@ -4,8 +4,10 @@ const router = express.Router();
 
 // 分析文本接口
 router.post('/analyze', async (req, res) => {
+  const requestId = Date.now().toString(36);
+
   try {
-    const { text, mode } = req.body;
+    const { text, mode, scene, tone } = req.body;
 
     // 输入验证
     if (!text || !text.trim()) {
@@ -22,13 +24,21 @@ router.post('/analyze', async (req, res) => {
       });
     }
 
-    // 调用AI服务
-    const result = await aiService.analyzeText(text.trim(), mode);
+    // 简洁日志
+    const settings = [];
+    if (scene) settings.push(`领域:${scene}`);
+    if (tone) settings.push(`口吻:${tone}`);
+    const settingsText = settings.length > 0 ? ` (${settings.join(', ')})` : '';
+    console.log(`[${requestId}] ${mode}分析: "${text.substring(0, 20)}${text.length > 20 ? '...' : ''}"${settingsText}`);
 
+    // 调用AI服务
+    const result = await aiService.analyzeText(text.trim(), mode, scene, tone);
+
+    console.log(`[${requestId}] 分析完成`);
     res.json(result);
 
   } catch (error) {
-    console.error('分析错误:', error);
+    console.error(`[${requestId}] 分析失败:`, error.message);
     res.status(500).json({
       success: false,
       error: error.message || '分析过程中发生错误'

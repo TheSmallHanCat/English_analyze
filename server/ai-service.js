@@ -18,9 +18,9 @@ class AIService {
     console.log(`🔧 AI配置: ${this.model} @ ${this.apiEndpoint}`);
   }
 
-  async analyzeText(text, mode) {
+  async analyzeText(text, mode, scene = null, tone = null) {
     try {
-      const prompt = mode === 'word' ? wordPrompt(text) : sentencePrompt(text);
+      const prompt = mode === 'word' ? wordPrompt(text, scene, tone) : sentencePrompt(text, scene, tone);
       
       // 检查配置
       if (!this.apiKey || this.apiKey === 'YOUR_API_KEY_HERE') {
@@ -35,8 +35,8 @@ class AIService {
             {
               role: "system",
               content: mode === 'word'
-                ? "你是一个专业的英语教师助手，擅长解析英语单词。请严格按照用户提供的HTML模板格式返回响应，不要添加任何额外的HTML标签或修改结构，只替换占位符内容。"
-                : "你是一个专业的英语教师助手，擅长解析英语句子。请严格按照用户提供的JSON格式返回响应，确保返回的是有效的JSON格式，不要添加任何额外的字段或修改结构。"
+                ? `你是一个专业的英语教师助手，擅长解析英语单词。请严格按照用户提供的HTML模板格式返回响应，不要添加任何额外的HTML标签或修改结构，只替换占位符内容。请运用你的语言专业知识智能判断输入的有效性，对于边缘情况请倾向于尝试分析。${scene ? `特别注意：请重点关注在${scene}领域中的用法和表达。` : ''}${tone ? `回答风格：请采用${tone}的风格进行解释。` : ''}`
+                : `你是一个专业的英语教师助手，擅长解析英语句子。请严格按照用户提供的HTML模板格式返回响应，不要添加任何额外的HTML标签或修改结构，只替换占位符内容。请运用你的语言专业知识智能判断输入的有效性，对于边缘情况请倾向于尝试分析。${scene ? `特别注意：请重点关注在${scene}领域中的用法和表达。` : ''}${tone ? `回答风格：请采用${tone}的风格进行解释。` : ''}`
             },
             {
               role: "user",
@@ -60,20 +60,17 @@ class AIService {
 
       let content = response.data.choices[0].message.content.trim();
 
-      if (mode === 'word') {
-        // 单词模式：清理HTML代码块标记
-        content = content.replace(/```html\s*|```\s*/g, '');
-      } else {
-        // 句子模式：清理JSON代码块标记并解析JSON
-        content = content.replace(/```json\s*|```\s*/g, '');
-        try {
-          // 验证JSON格式
-          const jsonData = JSON.parse(content);
-          content = JSON.stringify(jsonData); // 重新格式化
-        } catch (error) {
-          console.error('JSON解析错误:', error);
-          throw new Error('AI返回的JSON格式不正确');
-        }
+      // 单词模式和句子模式都使用HTML格式，清理HTML代码块标记
+      content = content.replace(/```html\s*|```\s*/g, '');
+
+      // 检查AI是否返回了无效输入标识
+      if (content.trim() === '[INVALID_INPUT]') {
+        return {
+          success: false,
+          error: 'INVALID_INPUT',
+          mode: mode,
+          timestamp: new Date().toISOString()
+        };
       }
 
       // 返回内容

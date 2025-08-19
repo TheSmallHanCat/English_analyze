@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI英语分析程序</title>
   <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.7/dist/purify.min.js"></script>
+  <link rel="stylesheet" href="lib/css/bootstrap-icons.css">
+  <script src="lib/js/axios.min.js"></script>
+  <script src="lib/js/dompurify.min.js"></script>
 
 </head>
 <body>
@@ -38,20 +38,26 @@
 
           <!-- 模式选择 -->
           <div class="mode-selector">
-            <label class="mode-option">
-              <input type="radio" name="analysisMode" value="word" checked>
-              <span class="mode-label">
-                <i class="bi bi-book"></i>
-                单词
-              </span>
-            </label>
-            <label class="mode-option">
-              <input type="radio" name="analysisMode" value="sentence">
-              <span class="mode-label">
-                <i class="bi bi-chat-text"></i>
-                句子
-              </span>
-            </label>
+            <div class="mode-options">
+              <label class="mode-option">
+                <input type="radio" name="analysisMode" value="word" checked>
+                <span class="mode-label">
+                  <i class="bi bi-book"></i>
+                  单词
+                </span>
+              </label>
+              <label class="mode-option">
+                <input type="radio" name="analysisMode" value="sentence">
+                <span class="mode-label">
+                  <i class="bi bi-chat-text"></i>
+                  句子
+                </span>
+              </label>
+            </div>
+            <button class="scene-btn" onclick="analyzer.openSceneModal()" title="设置">
+              <i class="bi bi-gear"></i>
+              <span id="currentSceneText">通用</span>
+            </button>
           </div>
         </div>
 
@@ -68,6 +74,89 @@
       </div>
     </main>
 
+    <!-- 场景设置悬浮窗 -->
+    <div class="scene-modal" id="sceneModal">
+      <div class="scene-modal-overlay" onclick="analyzer.closeSceneModal()"></div>
+      <div class="scene-modal-content">
+        <div class="scene-modal-header">
+          <h4>设置</h4>
+          <button class="scene-modal-close" onclick="analyzer.closeSceneModal()">
+            <i class="bi bi-x"></i>
+          </button>
+        </div>
+        <div class="scene-modal-body">
+          <div class="setting-section">
+            <h5 class="setting-title">
+              <i class="bi bi-briefcase"></i>
+              分析领域
+            </h5>
+            <div class="scene-presets">
+              <label class="scene-option">
+                <input type="radio" name="sceneMode" value="general" checked>
+                <span class="scene-label">通用</span>
+              </label>
+              <label class="scene-option">
+                <input type="radio" name="sceneMode" value="business">
+                <span class="scene-label">商务英语</span>
+              </label>
+              <label class="scene-option">
+                <input type="radio" name="sceneMode" value="academic">
+                <span class="scene-label">学术英语</span>
+              </label>
+              <label class="scene-option">
+                <input type="radio" name="sceneMode" value="technical">
+                <span class="scene-label">技术文档</span>
+              </label>
+              <label class="scene-option">
+                <input type="radio" name="sceneMode" value="daily">
+                <span class="scene-label">日常对话</span>
+              </label>
+              <label class="scene-option">
+                <input type="radio" name="sceneMode" value="custom">
+                <span class="scene-label">自定义</span>
+              </label>
+            </div>
+            <div class="custom-scene d-none" id="customSceneInput">
+              <input type="text" id="customScene" class="custom-scene-input"
+                     placeholder="描述特定领域或风格，如：医学领域、法律文档、文学作品等...">
+            </div>
+          </div>
+
+          <div class="setting-section">
+            <h5 class="setting-title">
+              <i class="bi bi-chat-dots"></i>
+              回答口吻
+            </h5>
+            <div class="tone-presets">
+              <label class="tone-option">
+                <input type="radio" name="toneMode" value="normal" checked>
+                <span class="tone-label">通用</span>
+              </label>
+              <label class="tone-option">
+                <input type="radio" name="toneMode" value="humorous">
+                <span class="tone-label">幽默</span>
+              </label>
+              <label class="tone-option">
+                <input type="radio" name="toneMode" value="catgirl">
+                <span class="tone-label">猫娘 🐱</span>
+              </label>
+              <label class="tone-option">
+                <input type="radio" name="toneMode" value="custom">
+                <span class="tone-label">自定义</span>
+              </label>
+            </div>
+            <div class="custom-tone d-none" id="customToneInput">
+              <input type="text" id="customTone" class="custom-tone-input"
+                     placeholder="描述期望的回答风格，如：严肃专业、轻松活泼、简洁明了等...">
+            </div>
+          </div>
+        </div>
+        <div class="scene-modal-footer">
+          <button class="scene-modal-cancel" onclick="analyzer.closeSceneModal()">取消</button>
+          <button class="scene-modal-confirm" onclick="analyzer.confirmSceneSettings()">确认</button>
+        </div>
+      </div>
+    </div>
 
   </div>
 

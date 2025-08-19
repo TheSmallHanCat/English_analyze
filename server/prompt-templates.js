@@ -1,8 +1,11 @@
 /**
  * 单词分析提示模板 - HTML输出格式
  */
-function wordPrompt(word) {
-  return `请以HTML格式提供英语单词"${word}"的详细分析，使用以下精确的HTML模板结构：
+function wordPrompt(word, scene = null, tone = null) {
+  const sceneContext = scene ? `\n\n特别要求：请重点关注该单词在${scene}领域中的专业用法、常见搭配和表达方式。` : '';
+  const toneContext = tone ? `\n\n回答风格：请采用${tone}的风格进行解释，让内容更加生动有趣。` : '';
+
+  return `请以HTML格式提供英语单词"${word}"的详细分析，使用以下精确的HTML模板结构：${sceneContext}${toneContext}
 
 <div class="word-card">
   <div class="card-header">
@@ -76,84 +79,119 @@ function wordPrompt(word) {
 2. 替换所有方括号内的占位符为实际内容
 3. 保持HTML标签和类名完全一致
 4. 所有解释使用中文
-5. 不要添加任何额外的HTML标签或修改结构`;
+5. 不要添加任何额外的HTML标签或修改结构
+
+⚠️ 重要：请智能判断输入内容的有效性。如果输入的内容不是有效的英语单词或者短语，请直接返回：[INVALID_INPUT]
+
+无效输入包括但不限于：
+- 空白内容或纯空格
+- 纯符号（如：???, !!!, @@@）
+- 纯数字（如：123, 456）
+- 无意义的字符组合（如：asdfgh, qwerty）
+- 中文或其他非英语内容
+
+请根据您的语言知识智能判断，对于边缘情况请倾向于尝试分析而不是拒绝。`;
 }
 
 /**
- * 句子分析提示模板 - JSON输出格式（参考exampleproject）
+ * 句子分析提示模板 - HTML输出格式
  */
-function sentencePrompt(sentence) {
-  return `请以JSON格式提供对英语句子"${sentence}"的详细解析。
+function sentencePrompt(sentence, scene = null, tone = null) {
+  const sceneContext = scene ? `\n\n特别要求：请重点关注该句子在${scene}领域中的专业表达方式、术语使用和语言特点。` : '';
+  const toneContext = tone ? `\n\n回答风格：请采用${tone}的风格进行解释，让内容更加生动有趣。` : '';
 
-请严格按照以下JSON结构返回：
+  return `请以HTML格式提供英语句子"${sentence}"的详细解析，使用以下精确的HTML模板结构：${sceneContext}${toneContext}
 
-{
-  "sentence": "${sentence}",
-  "translation": "[整体中文翻译]",
-  "structure": {
-    "type": "[句子类型，如：简单句/复合句/复杂句]",
-    "explanation": "[详细的结构解释]"
-  },
-  "components": [
-    {
-      "role": "主语",
-      "text": "[主语部分]",
-      "explanation": "[主语说明]"
-    },
-    {
-      "role": "谓语",
-      "text": "[谓语部分]",
-      "explanation": "[谓语说明]"
-    },
-    {
-      "role": "宾语",
-      "text": "[宾语部分]",
-      "explanation": "[宾语说明]"
-    },
-    {
-      "role": "状语",
-      "text": "[状语部分]",
-      "explanation": "[状语说明]"
-    }
-  ],
-  "keyPhrases": [
-    {
-      "phrase": "[重点短语1]",
-      "meaning": "[中文含义]",
-      "usage": "[用法说明]"
-    },
-    {
-      "phrase": "[重点短语2]",
-      "meaning": "[中文含义]",
-      "usage": "[用法说明]"
-    },
-    {
-      "phrase": "[重点短语3]",
-      "meaning": "[中文含义]",
-      "usage": "[用法说明]"
-    }
-  ],
-  "grammar": [
-    {
-      "aspect": "[语法点1名称]",
-      "explanation": "[详细解释]"
-    },
-    {
-      "aspect": "[语法点2名称]",
-      "explanation": "[详细解释]"
-    }
-  ]
-}
+<div class="sentence-analysis">
+  <div class="original-sentence">
+    ${sentence}
+  </div>
+  <div class="translation">
+    [整体中文翻译]
+  </div>
+  <div class="structure">
+    <h5 class="section-title">句子结构</h5>
+    <div class="structure-type"><strong>类型：</strong> [句子类型，如：简单句/复合句/复杂句]</div>
+    <div class="structure-explanation">[详细的结构解释]</div>
+  </div>
+
+  <div class="components">
+    <h5 class="section-title">句子成分</h5>
+    <div class="component">
+      <div class="role">主语</div>
+      <div class="text"><strong>[主语部分]</strong></div>
+      <div class="explanation">[主语说明]</div>
+    </div>
+    <div class="component">
+      <div class="role">谓语</div>
+      <div class="text"><strong>[谓语部分]</strong></div>
+      <div class="explanation">[谓语说明]</div>
+    </div>
+    <div class="component">
+      <div class="role">宾语</div>
+      <div class="text"><strong>[宾语部分]</strong></div>
+      <div class="explanation">[宾语说明]</div>
+    </div>
+    <div class="component">
+      <div class="role">状语</div>
+      <div class="text"><strong>[状语部分]</strong></div>
+      <div class="explanation">[状语说明]</div>
+    </div>
+  </div>
+
+  <div class="key-phrases">
+    <h5 class="section-title">关键词汇与短语</h5>
+    <div class="key-phrase">
+      <div class="phrase">[重点短语1]</div>
+      <div class="meaning"><strong>含义：</strong> [中文含义]</div>
+      <div class="usage"><strong>用法：</strong> [用法说明]</div>
+    </div>
+    <div class="key-phrase">
+      <div class="phrase">[重点短语2]</div>
+      <div class="meaning"><strong>含义：</strong> [中文含义]</div>
+      <div class="usage"><strong>用法：</strong> [用法说明]</div>
+    </div>
+    <div class="key-phrase">
+      <div class="phrase">[重点短语3]</div>
+      <div class="meaning"><strong>含义：</strong> [中文含义]</div>
+      <div class="usage"><strong>用法：</strong> [用法说明]</div>
+    </div>
+  </div>
+
+  <div class="grammar-points">
+    <h5 class="section-title">语法分析</h5>
+    <div class="grammar-point">
+      <div class="aspect">[语法点1名称]</div>
+      <div class="explanation">[详细解释]</div>
+    </div>
+    <div class="grammar-point">
+      <div class="aspect">[语法点2名称]</div>
+      <div class="explanation">[详细解释]</div>
+    </div>
+  </div>
+</div>
 
 要求：
-1. 严格按照上述JSON结构输出
+1. 严格按照上述HTML模板结构输出
 2. 替换所有方括号内的占位符为实际内容
-3. 确保JSON格式正确，可以被解析
+3. 保持HTML标签和类名完全一致
 4. 所有解释使用中文
-5. 分析所有主要句子成分（如果某个成分不存在，可以省略）
+5. 根据句子实际情况，如果某些成分不存在可以省略对应的component div
 6. 提供至少3个关键短语分析
 7. 提供至少2个语法要点分析
-8. 不要添加任何额外的字段或修改结构`;
+8. 不要添加任何额外的HTML标签或修改结构
+
+⚠️ 重要：请智能判断输入内容的有效性。如果输入的内容不是有效的英语句子，请直接返回：[INVALID_INPUT]
+
+无效输入包括但不限于：
+- 空白内容或纯空格
+- 纯符号（如：???, !!!, @@@）
+- 纯数字（如：123456）
+- 无意义的字符组合（如：asdfgh qwerty）
+- 中文或其他非英语内容
+- 过短的无意义内容（如：a, aa, 111）
+
+请根据您的语言知识智能判断，对于边缘情况（如不完整的句子、口语化表达、网络用语等）请倾向于尝试分析而不是拒绝。`;
 }
 
 module.exports = {
