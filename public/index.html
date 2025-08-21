@@ -29,8 +29,13 @@
         <!-- 输入区域 -->
         <div class="input-section">
           <div class="input-container">
-            <input type="text" id="textInput" class="text-input"
-                   placeholder="输入英语单词或句子...">
+            <div class="input-wrapper">
+              <input type="text" id="textInput" class="text-input"
+                     placeholder="输入英语单词或句子...">
+              <button class="clear-btn" id="clearBtn" style="display: none;">
+                <i class="bi bi-x"></i>
+              </button>
+            </div>
             <button class="analyze-btn" id="analyzeBtn">
               <i class="bi bi-search"></i>
             </button>
