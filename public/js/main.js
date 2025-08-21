@@ -10,6 +10,7 @@ class EnglishAnalyzer {
   initializeElements() {
     this.textInput = document.getElementById('textInput');
     this.analyzeBtn = document.getElementById('analyzeBtn');
+    this.clearBtn = document.getElementById('clearBtn');
     this.loadingIndicator = document.getElementById('loadingIndicator');
     this.resultContainer = document.getElementById('resultContainer');
   }
@@ -18,12 +19,18 @@ class EnglishAnalyzer {
     // 分析按钮点击事件
     this.analyzeBtn.addEventListener('click', () => this.analyzeText());
 
+    // 清除按钮点击事件
+    this.clearBtn.addEventListener('click', () => this.clearInput());
+
     // 输入框回车事件
     this.textInput.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') {
         this.analyzeText();
       }
     });
+
+    // 输入框输入事件，用于显示/隐藏清除按钮
+    this.textInput.addEventListener('input', () => this.updateClearButtonVisibility());
   }
 
   initSceneSettings() {
@@ -99,6 +106,17 @@ class EnglishAnalyzer {
       };
       currentSceneText.textContent = sceneMap[selectedMode] || '通用';
     }
+  }
+
+  clearInput() {
+    this.textInput.value = '';
+    this.updateClearButtonVisibility();
+    this.textInput.focus();
+  }
+
+  updateClearButtonVisibility() {
+    const hasContent = this.textInput.value.trim().length > 0;
+    this.clearBtn.style.display = hasContent ? 'flex' : 'none';
   }
 
   getSceneContext() {

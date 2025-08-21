@@ -126,10 +126,18 @@ body {
   display: flex;
   gap: 0.75rem;
   margin-bottom: 1.5rem;
+  align-items: center;
+}
+
+.input-wrapper {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
 }
 
 .text-input {
-  flex: 1;
+  width: 100%;
   padding: 0.875rem 1rem;
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -170,6 +178,40 @@ body {
 
 .analyze-btn:active {
   transform: translateY(0);
+}
+
+.clear-btn {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--gray-200);
+  color: var(--text-tertiary);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  padding: 0;
+  z-index: 2;
+}
+
+.clear-btn:hover {
+  background: var(--gray-200);
+  color: var(--text-primary);
+}
+
+.clear-btn:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+.clear-btn i {
+  font-size: 0.875rem;
+  line-height: 1;
 }
 
 /* 模式选择器 */
